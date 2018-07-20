@@ -4,7 +4,7 @@
 #endif
 
 #define PIN_OUT 6
-#define LUM 5 //luminosité
+#define LUM 5 //luminosité de 0 a 255
 #define NBRLEDS 16
 
 
@@ -12,17 +12,18 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 
 uint32_t off = strip.Color(0, 0, 0);
 
-struct led
+struct led //trois valeurs de couleurs, de 0 a 255
 {
   char rouge;
   char vert;
   char bleu;
 };
 
-struct led cadran[NBRLEDS];
+struct led cadran[NBRLEDS]; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
 
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
   strip.begin();
   toutEteindre();
@@ -32,7 +33,27 @@ void setup() {
 
 }
 
-void loop() {
+void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran 
+{
+  for (int i = 0; i<NBRLEDS; i++)
+  {
+    if (cadran[i].rouge > 255) // vérifications
+    cadran[i].rouge = 255;
+
+    if (cadran[i].vert > 255)
+    cadran[i].vert = 255;
+
+    if (cadran[i].bleu > 255)
+    cadran[i].bleu = 255;
+
+    
+    strip.setPixelColor(i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
+  }
+  strip.show();
+}
+
+void loop() 
+{
   
 }
 
