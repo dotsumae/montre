@@ -5,14 +5,13 @@
 
 #include <DS3231.h>
 #include <Wire.h>
-
+#include <time.h>
 
 #define PIN_OUT 6
 #define LUM 2 //luminosité de 0 a 255
 #define NBRLEDS 16
 
-#define HEURE 8
-#define MINUTE 16
+#define SETTIME 1 //Mettre l'horloge a l'heure de la compilation
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
@@ -29,8 +28,12 @@ struct led //trois valeurs de couleurs, de 0 a 255
 };
 
 
-
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
+
+
+
+
+
 
 void setup()
 {
@@ -42,6 +45,28 @@ void setup()
   strip.setBrightness(LUM);
   delay(100);
   strip.show();
+
+  if (SETTIME)
+  {
+    
+    char *cTime = __TIME__;
+    //char *cDate;
+
+    //strcpy(cTime, __TIME__);
+    //strcpy(cDate, __DATE__);
+
+
+    //Serial.println(cTime);
+    horloge.setClockMode(true); // set to 12h
+    //    horloge.setYear(Year);
+    //    horloge.setMonth(Month);
+    //    horloge.setDate(Date);
+    //    horloge.setDoW(DoW);
+
+    horloge.setHour(atoi(strsep(&cTime, ":")));
+    horloge.setMinute(atoi(strsep(&cTime, ":")));
+    horloge.setSecond(atoi(cTime));
+  }
 }
 
 void loop()
@@ -61,7 +86,7 @@ void loop()
 
 
 
-  cadran[soixanteVersSeize((int) heures * (60.0 / 12.0) )].bleu = 255; //affichage de l'heure
+  cadran[soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) )].bleu = 255; //affichage de l'heure
   cadran[soixanteVersSeize(minutes)].vert = 255;
   afficherCadran(cadran);
   delay(700);
