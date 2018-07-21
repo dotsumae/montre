@@ -3,18 +3,23 @@
 #include <avr/power.h>
 #endif
 
+#include <DS3231.h>
+#include <Wire.h>
+
 
 #define PIN_OUT 6
 #define LUM 2 //luminosité de 0 a 255
 #define NBRLEDS 16
 
-#define HEURE 4.0   //exemples, a remplacer par les vraies heures
-#define MINUTE 50
-
+#define HEURE 8
+#define MINUTE 16
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
+DS3231 horloge;
 
 uint32_t off = strip.Color(0, 0, 0);
+bool h12;
+bool PM;
 
 struct led //trois valeurs de couleurs, de 0 a 255
 {
@@ -23,12 +28,16 @@ struct led //trois valeurs de couleurs, de 0 a 255
   char bleu;
 };
 
+
+
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
 void setup()
 {
+
   Serial.begin(9600);
   strip.begin();
+  Wire.begin();
   toutEteindre();
   strip.setBrightness(LUM);
   delay(100);
@@ -37,25 +46,35 @@ void setup()
 
 void loop()
 {
-//                                           Test de 0 a 59
-//  for (int i = 0; i < 60; i++)
-//  {
-//    int i16 = soixanteVersSeize(i); 
-//    Serial.print("Allumage de la led ");
-//    Serial.print(i16);
-//    Serial.print(" minute ");
-//    Serial.println(i);
-//
-//    cadran[i16].vert = 255;
-//    afficherCadran(cadran);
-//    delay(200);
-//  }
+  //                                           Test de 0 a 59
+  //  for (int i = 0; i < 60; i++)
+  //  {
+  //    int i16 = soixanteVersSeize(i);
+  //    Serial.print("Allumage de la led ");
+  //    Serial.print(i16);
+  //    Serial.print(" minute ");
+  //    Serial.println(i);
+  //
+  //    cadran[i16].vert = 255;
+  //    afficherCadran(cadran);
+  //    delay(200);
+  //  }
 
-//                                          Affichage d'un instant quelconque
-cadran[soixanteVersSeize((int) HEURE *(60.0/12.0) )].bleu = 255;
-cadran[soixanteVersSeize(MINUTE)].vert = 255;
-afficherCadran(cadran);
-delay(2000);
+
+  Serial.print(horloge.getHour(h12, PM), DEC);
+  Serial.print(" heures ");
+  Serial.print(horloge.getMinute(), DEC);
+  Serial.print(" minutes et ");
+  Serial.print(horloge.getSecond(), DEC);
+  Serial.println(" secondes. ");
+
+
+
+  //                                          Affichage de l'heure
+  cadran[soixanteVersSeize((int) HEURE * (60.0 / 12.0) )].bleu = 255;
+  cadran[soixanteVersSeize(MINUTE)].vert = 255;
+  afficherCadran(cadran);
+  delay(700);
 
   Serial.println("Extinction de l'anneau");
   toutEteindre();
@@ -116,7 +135,7 @@ void toutEteindre()
 
 int soixanteVersSeize(int position)
 {
-//  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
+  //  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
 
   int positionEntiere = (int) (position / 3.75); //indice de la led a allumer
   float positionDecimale = position / 3.75 - positionEntiere; //proximité entre 0 et 1- de la led suivante
