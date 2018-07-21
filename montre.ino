@@ -46,20 +46,6 @@ void setup()
 
 void loop()
 {
-  //                                           Test de 0 a 59
-  //  for (int i = 0; i < 60; i++)
-  //  {
-  //    int i16 = soixanteVersSeize(i);
-  //    Serial.print("Allumage de la led ");
-  //    Serial.print(i16);
-  //    Serial.print(" minute ");
-  //    Serial.println(i);
-  //
-  //    cadran[i16].vert = 255;
-  //    afficherCadran(cadran);
-  //    delay(200);
-  //  }
-
 
   Serial.print(horloge.getHour(h12, PM), DEC);
   Serial.print(" heures ");
@@ -69,10 +55,14 @@ void loop()
   Serial.println(" secondes. ");
 
 
+  int heures = (int) horloge.getHour(h12, PM); //recuperation de l'heure
+  int minutes = (int) horloge.getMinute();
+  int secondes = (int) horloge.getSecond();
 
-  //                                          Affichage de l'heure
-  cadran[soixanteVersSeize((int) HEURE * (60.0 / 12.0) )].bleu = 255;
-  cadran[soixanteVersSeize(MINUTE)].vert = 255;
+
+
+  cadran[soixanteVersSeize((int) heures * (60.0 / 12.0) )].bleu = 255; //affichage de l'heure
+  cadran[soixanteVersSeize(minutes)].vert = 255;
   afficherCadran(cadran);
   delay(700);
 
