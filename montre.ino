@@ -37,21 +37,21 @@ void setup()
 
 void loop()
 {
-  cadran[0].bleu = 255;
-  afficherCadran(cadran);
-  delay(500);
-  cadran[2].vert = 255;
-  afficherCadran(cadran);
-  delay(500);
+
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    cadran[i].vert = 255;
+    afficherCadran(cadran);
+    delay(100);
+  }
   toutEteindre();
-  delay(500);
 
 }
 
 
 void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
 {
-  for (int i = NBRLEDS; i >= 0; i--)
+  for (int i = 0; i < NBRLEDS; i++)
   {
 
     if (cadran[i].rouge > 255)
@@ -64,7 +64,9 @@ void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau 
       cadran[i].bleu = 255;
 
 
-    strip.setPixelColor(i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
+    strip.setPixelColor(15-i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
+
+    
   }
   strip.show();
 }
