@@ -5,8 +5,11 @@
 
 
 #define PIN_OUT 6
-#define LUM 5 //luminosité de 0 a 255
+#define LUM 2 //luminosité de 0 a 255
 #define NBRLEDS 16
+
+#define HEURE 2   //exemples, a remplacer par les vraies heures
+#define MINUTE 17
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
@@ -44,7 +47,17 @@ void loop()
     afficherCadran(cadran);
     delay(100);
   }
+
+
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    cadran[i].bleu = 255;
+    afficherCadran(cadran);
+    delay(50);
+  }
+
   toutEteindre();
+  delay(300);
 
 }
 
@@ -64,9 +77,9 @@ void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau 
       cadran[i].bleu = 255;
 
 
-    strip.setPixelColor(15-i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
+    strip.setPixelColor(15 - i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
 
-    
+
   }
   strip.show();
 }
