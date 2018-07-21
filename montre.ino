@@ -37,17 +37,24 @@ void setup()
 
 void loop()
 {
-//                                            Test classique
-//  for (int i = 0; i < NBRLEDS; i++)
+//                                           Test de 0 a 59
+//  for (int i = 0; i < 60; i++)
 //  {
-//    cadran[i].vert = 255;
+//    int i16 = soixanteVersSeize(i); 
+//    Serial.print("Allumage de la led ");
+//    Serial.print(i16);
+//    Serial.print(" minute ");
+//    Serial.println(i);
+//
+//    cadran[i16].vert = 255;
 //    afficherCadran(cadran);
-//    delay(100);
+//    delay(200);
 //  }
 
-//                                             Test de 0 a 59
-  for (int i = 0; i < 60; i++)
+         //                                    Test sur 0, 15, 30, 45
+  for (int j = 0; j < 4; j++)
   {
+    int i = 15*j;
     int i16 = soixanteVersSeize(i); 
     Serial.print("Allumage de la led ");
     Serial.print(i16);
@@ -56,7 +63,7 @@ void loop()
 
     cadran[i16].vert = 255;
     afficherCadran(cadran);
-    delay(200);
+    delay(2000);
   }
 
   Serial.println("Extinction de l'anneau");
