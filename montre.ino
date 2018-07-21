@@ -8,8 +8,8 @@
 #define LUM 2 //luminosité de 0 a 255
 #define NBRLEDS 16
 
-#define HEURE 2   //exemples, a remplacer par les vraies heures
-#define MINUTE 17
+#define HEURE 4.0   //exemples, a remplacer par les vraies heures
+#define MINUTE 50
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
@@ -51,20 +51,11 @@ void loop()
 //    delay(200);
 //  }
 
-         //                                    Test sur 0, 15, 30, 45
-  for (int j = 0; j < 4; j++)
-  {
-    int i = 15*j;
-    int i16 = soixanteVersSeize(i); 
-    Serial.print("Allumage de la led ");
-    Serial.print(i16);
-    Serial.print(" minute ");
-    Serial.println(i);
-
-    cadran[i16].vert = 255;
-    afficherCadran(cadran);
-    delay(2000);
-  }
+//                                          Affichage d'un instant quelconque
+cadran[soixanteVersSeize((int) HEURE *(60.0/12.0) )].bleu = 255;
+cadran[soixanteVersSeize(MINUTE)].vert = 255;
+afficherCadran(cadran);
+delay(2000);
 
   Serial.println("Extinction de l'anneau");
   toutEteindre();
