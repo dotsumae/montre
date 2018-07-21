@@ -37,22 +37,29 @@ void setup()
 
 void loop()
 {
+//                                            Test classique
+//  for (int i = 0; i < NBRLEDS; i++)
+//  {
+//    cadran[i].vert = 255;
+//    afficherCadran(cadran);
+//    delay(100);
+//  }
 
-  for (int i = 0; i < NBRLEDS; i++)
+//                                             Test de 0 a 59
+  for (int i = 0; i < 60; i++)
   {
-    cadran[i].vert = 255;
+    int i16 = soixanteVersSeize(i); 
+    Serial.print("Allumage de la led ");
+    Serial.print(i16);
+    Serial.print(" minute ");
+    Serial.println(i);
+
+    cadran[i16].vert = 255;
     afficherCadran(cadran);
-    delay(100);
+    delay(200);
   }
 
-
-  for (int i = 0; i < NBRLEDS; i++)
-  {
-    cadran[i].bleu = 255;
-    afficherCadran(cadran);
-    delay(50);
-  }
-
+  Serial.println("Extinction de l'anneau");
   toutEteindre();
   delay(300);
 
@@ -109,25 +116,14 @@ void toutEteindre()
 
 
 
-
-
-
-
-
-
-//
-//void placerAiguille(enum t_aiguille aiguille, int position)
-//{
+int soixanteVersSeize(int position)
+{
 //  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
-//
-//  int positionEntiere = (int) (position / 3.75);
-//  float positionDecimale = position / 3.75 - positionEntiere;
-//
-//
-//
-//  strip.show();
-//
-//
-//}
+
+  int positionEntiere = (int) (position / 3.75); //indice de la led a allumer
+  float positionDecimale = position / 3.75 - positionEntiere; //proximité entre 0 et 1- de la led suivante
+
+  return positionEntiere;
+}
 
 
