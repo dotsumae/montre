@@ -15,15 +15,15 @@ uint32_t off = strip.Color(0, 0, 0);
 
 struct led //trois valeurs de couleurs, de 0 a 255
 {
-  char rouge;
   char vert;
+  char rouge;
   char bleu;
 };
 
-struct led cadran[NBRLEDS]; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
+struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
   strip.begin();
@@ -31,32 +31,54 @@ void setup()
   strip.setBrightness(LUM);
   delay(100);
   strip.show();
-
+  cadran[0].bleu = 255;
 }
 
-void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran 
+void loop()
 {
-  for (int i = 0; i<NBRLEDS; i++)
-  {
-    if (cadran[i].rouge > 255) // vérifications
-    cadran[i].rouge = 255;
+  afficherCadran(cadran);
+}
 
-    if (cadran[i].vert > 255)
-    cadran[i].vert = 255;
+
+void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
+{
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    
+    if (cadran[i].rouge > 255)
+      cadran[i].rouge = 255;
+      
+    if (cadran[i].vert > 255) // vérifications
+      cadran[i].vert = 255;
 
     if (cadran[i].bleu > 255)
-    cadran[i].bleu = 255;
+      cadran[i].bleu = 255;
 
-    
+
     strip.setPixelColor(i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
   }
   strip.show();
 }
 
-void loop() 
+
+
+
+void toutEteindre()
 {
-  
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    strip.setPixelColor(i, off);
+  }
 }
+
+
+
+
+
+
+
+
+
 
 //
 //void placerAiguille(enum t_aiguille aiguille, int position)
@@ -72,17 +94,5 @@ void loop()
 //
 //
 //}
-
-void toutEteindre()
-{
-  for (int i = 0; i < NBRLEDS; i++)
-  {
-    strip.setPixelColor(i, off);
-  }
-}
-
-
-
-
 
 
