@@ -4,7 +4,6 @@
 #endif
 
 
-
 #define PIN_OUT 6
 #define LUM 5 //luminosité de 0 a 255
 #define NBRLEDS 16
@@ -32,23 +31,32 @@ void setup()
   strip.setBrightness(LUM);
   delay(100);
   strip.show();
-  cadran[0].bleu = 255;
+
+
 }
 
 void loop()
 {
+  cadran[0].bleu = 255;
   afficherCadran(cadran);
+  delay(500);
+  cadran[2].vert = 255;
+  afficherCadran(cadran);
+  delay(500);
+  toutEteindre();
+  delay(500);
+
 }
 
 
 void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
 {
-  for (int i = 0; i < NBRLEDS; i++)
+  for (int i = NBRLEDS; i >= 0; i--)
   {
-    
+
     if (cadran[i].rouge > 255)
       cadran[i].rouge = 255;
-      
+
     if (cadran[i].vert > 255) // vérifications
       cadran[i].vert = 255;
 
@@ -66,10 +74,8 @@ void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau 
 
 void toutEteindre()
 {
-  for (int i = 0; i < NBRLEDS; i++)
-  {
-    strip.setPixelColor(i, off);
-  }
+  memset(cadran, 0, sizeof(struct led) * NBRLEDS);
+  afficherCadran(cadran);
 }
 
 
