@@ -50,10 +50,7 @@ void setup()
   {
     
     char *cTime = __TIME__;
-    //char *cDate;
-
-    //strcpy(cTime, __TIME__);
-    //strcpy(cDate, __DATE__);
+    char *cDate = __DATE__;
 
 
     //Serial.println(cTime);
