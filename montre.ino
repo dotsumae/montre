@@ -23,7 +23,6 @@ struct led //trois valeurs de couleurs, de 0 a 255
   char bleu;
 };
 
-
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
 void setup()
@@ -34,8 +33,6 @@ void setup()
   strip.setBrightness(LUM);
   delay(100);
   strip.show();
-
-
 }
 
 void loop()
@@ -60,6 +57,22 @@ void loop()
   delay(300);
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
