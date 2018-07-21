@@ -8,7 +8,7 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 2 //luminosité de 0 a 255
+#define LUM 1 //luminosité de 0 a 255
 #define NBRLEDS 16
 
 #define SETTIME 1 //Mettre l'horloge a l'heure de la compilation
@@ -17,7 +17,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
 
 uint32_t off = strip.Color(0, 0, 0);
-bool h12;
+bool h12; //recupération de paramètres de l'horloge
 bool PM;
 
 struct led //trois valeurs de couleurs, de 0 a 255
