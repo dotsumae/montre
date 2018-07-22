@@ -8,9 +8,9 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 50      //luminosité de 0 a 255
+#define LUM 100      //luminosité de 0 a 255
 #define NBRLEDS 16
-#define SETTIME 0 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
+#define SETTIME 1 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
 #define DELAIREMPLISSAGE 30
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
@@ -78,9 +78,6 @@ void loop()
   int heures = (int) horloge.getHour(h12, PM); //recuperation de l'heure
   int minutes = (int) horloge.getMinute();
   int secondes = (int) horloge.getSecond();
-
-  heures = 3;
-  minutes = 5;
 
 
   aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
@@ -167,28 +164,24 @@ void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct
 
   while (i != positionArret.posHeures && i != NBRLEDS)
   {
-    Serial.print("Led ");
-    Serial.print(i);
-    Serial.println(" mise à jour.");
     cadran[i].rouge += couleurHeures.rouge;
     cadran[i].vert += couleurHeures.vert;
     cadran[i].bleu += couleurHeures.bleu;
+    afficherCadran(cadran);
+
     i++;
     delay(DELAIREMPLISSAGE);
-    afficherCadran(cadran);
   }
-i = 0;
+  i = 0;
   while (i != positionArret.posMinutes && i != NBRLEDS)
   {
-    Serial.print("Led ");
-    Serial.print(i);
-    Serial.println(" mise à jour.");
     cadran[i].rouge += couleurMinutes.rouge;
     cadran[i].vert += couleurMinutes.vert;
     cadran[i].bleu += couleurMinutes.bleu;
+    afficherCadran(cadran);
+
     i++;
     delay(DELAIREMPLISSAGE);
-    afficherCadran(cadran);
   }
 }
 
