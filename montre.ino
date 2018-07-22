@@ -8,26 +8,26 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 20      //luminosité de 0 a 255
+#define LUM 100      //luminosité de 0 a 255
 #define NBRLEDS 16
-#define SETTIME 1 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
+#define SETTIME 0 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
 
-uint32_t off = strip.Color(0, 0, 0);
 bool h12; //recupération de paramètres de l'horloge
 bool PM;
 bool Century;
 
 struct led //trois valeurs de couleurs, de 0 a 255
 {
-  char vert;
-  char rouge;
-  char bleu;
+  int rouge;
+  int vert;
+  int bleu;
 };
 
+uint32_t off = strip.Color(0, 0, 0);
 
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
@@ -66,36 +66,35 @@ void setup()
 
 void loop()
 {
+  struct led fullVert;
+  fullVert.rouge = 0;
+  fullVert.bleu = 0;
+  fullVert.vert = 255;
 
-
-  Serial.print(horloge.getHour(h12, PM), DEC); //affichage de l'heure
-  Serial.print(" heures ");
-  Serial.print(horloge.getMinute(), DEC);
-  Serial.print(" minutes et ");
-  Serial.print(horloge.getSecond(), DEC);
-  Serial.println(" secondes. ");
-
-  Serial.print(horloge.getDate(), DEC); //affichage de la date
-  Serial.print("/");
-  Serial.print(horloge.getMonth(Century), DEC);
-  Serial.print("/");
-  Serial.println(horloge.getYear(), DEC);
-
+  struct led fullBleu;
+  fullBleu.rouge = 0;
+  fullBleu.bleu = 255;
+  fullBleu.vert = 0;
 
   int heures = (int) horloge.getHour(h12, PM); //recuperation de l'heure
   int minutes = (int) horloge.getMinute();
   int secondes = (int) horloge.getSecond();
 
 
+  cadran[soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) )].bleu = 255;
+  cadran[soixanteVersSeize(minutes)].vert = 255; //mise a 255 des deux dernières led
 
-  cadran[soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) )].bleu = 255; //affichage de l'heure
-  cadran[soixanteVersSeize(minutes)].vert = 255;
-  afficherCadran(cadran);
-  delay(700);
+  Serial.println("Avant remplissage : ");
+  printCadran(cadran);
 
-  Serial.println("Extinction de l'anneau");
+  Serial.println("Après remplissage : ");
+  printCadran(cadran);
+
+ remplirCadran(cadran, fullBleu);
+  remplirCadran(cadran, fullVert);
+
+  delay(5000);
   toutEteindre();
-  delay(300);
 
 }
 
@@ -112,7 +111,19 @@ void loop()
 
 
 
-
+void printCadran(struct led *cadran)
+{
+  Serial.println("Etat du cadran : ");
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    Serial.print("  R : ");
+    Serial.print(cadran[i].rouge);
+    Serial.print("  G : ");
+    Serial.print(cadran[i].vert);
+    Serial.print("  B : ");
+    Serial.println(cadran[i].bleu);
+  }
+}
 
 
 
@@ -138,7 +149,23 @@ void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau 
   strip.show();
 }
 
+void remplirCadran(struct led *cadran, struct led couleur) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
+{
+  int i = 0;
 
+  while ((cadran[i].bleu != couleur.bleu && cadran[i].vert != couleur.vert && cadran[i].rouge != couleur.rouge) && i != NBRLEDS)//cadran[i].rouge != couleur.rouge && cadran[i].vert != couleur.vert && cadran[i].bleu != couleur.bleu && i != NBRLEDS)
+  {
+    Serial.print("Led ");
+    Serial.print(i);
+    Serial.println(" mise à jour.");
+    cadran[i].rouge += couleur.rouge;
+    cadran[i].vert += couleur.vert;
+    cadran[i].bleu += couleur.bleu;
+    i++;
+    delay(200);
+    afficherCadran(cadran);
+  }
+}
 
 
 void toutEteindre()
@@ -163,7 +190,6 @@ int soixanteVersSeize(int position)
 int moisVersNombre(char *mois)
 {
   byte Month;
-  Serial.println(mois);
 
   if (!strcmp(mois, "Jan"))
   {
@@ -230,7 +256,6 @@ int moisVersNombre(char *mois)
     Serial.println("Erreur dans la lecture du mois !");
   }
 
-  Serial.println(Month);
   return Month;
 
 }
