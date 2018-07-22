@@ -8,7 +8,7 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 1 //luminosité de 0 a 255
+#define LUM 1      //luminosité de 0 a 255
 #define NBRLEDS 16
 
 
@@ -30,10 +30,6 @@ struct led //trois valeurs de couleurs, de 0 a 255
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 
 
-
-
-
-
 void setup()
 {
 
@@ -45,23 +41,23 @@ void setup()
   delay(100);
   strip.show();
 
-#ifndef SETTIME
-#define SETTME
-  char *cTime = __TIME__;
-  char *cDate = __DATE__;
+  #ifndef SETTIME
+  #define SETTME
+    char *cTime = __TIME__;
+    char *cDate = __DATE__;
+    
+  
+    horloge.setMonth(moisVersNombre(strsep(&cDate, " ")));
+    horloge.setDate(atoi(strsep(&cDate, " ")));
+    horloge.setYear(atoi(strsep(&cDate, " ")));
+    horloge.setClockMode(true); // Heure
+    horloge.setHour(atoi(strsep(&cTime, ":")));
+    horloge.setMinute(atoi(strsep(&cTime, ":")));
+    horloge.setSecond(atoi(cTime));
 
-
-  //Serial.println(cTime);
-  horloge.setClockMode(true); // set to 12h
-  //    horloge.setYear(Year);
-  //    horloge.setMonth(Month);
-  //    horloge.setDate(Date);
-  //    horloge.setDoW(DoW);
-
-  horloge.setHour(atoi(strsep(&cTime, ":")));
-  horloge.setMinute(atoi(strsep(&cTime, ":")));
-  horloge.setSecond(atoi(cTime));
-#endif
+    free(cTime);
+    free(cDate);
+  #endif
 
 }
 
@@ -154,4 +150,70 @@ int soixanteVersSeize(int position)
   return positionEntiere;
 }
 
+int moisVersNombre(char mois[3])
+{
+  byte Month;
+
+    if (mois == "jan")
+    {
+      Month = 1;
+    }
+
+    else if (mois == "feb")
+    {
+      Month = 2;
+    }
+
+    else if (mois == "mar")
+    {
+      Month = 3;
+    }
+    else if (mois == "apr")
+    {
+      Month = 4;
+    }
+
+    else if (mois == "may")
+    {
+      Month = 5;
+    }
+
+    else if (mois == "jun")
+    {
+      Month = 6;
+    }
+
+    else if (mois == "jul")
+    {
+      Month = 7;
+    }
+
+    else if (mois == "aug")
+    {
+      Month = 8;
+    }
+
+    else if (mois == "sep")
+    {
+      Month = 9;
+    }
+
+    else if (mois == "otc")
+    {
+      Month = 10;
+    }
+
+    else if (mois == "nov")
+    {
+      Month = 11;
+    }
+
+    else if (mois == "dec")
+    {
+      Month = 12;
+    }
+
+    return Month;
+    
+}
 
