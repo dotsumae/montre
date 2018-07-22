@@ -79,7 +79,8 @@ void loop()
   int minutes = (int) horloge.getMinute();
   int secondes = (int) horloge.getSecond();
 
-
+heures = 3;
+minutes = 5;
   aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
@@ -162,7 +163,7 @@ void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct
 {
   int i = 0;
 
-  while (i != positionArret.posHeures && i != NBRLEDS)
+  while (i <= positionArret.posHeures)
   {
     cadran[i].rouge += couleurHeures.rouge;
     cadran[i].vert += couleurHeures.vert;
@@ -173,7 +174,7 @@ void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct
     delay(DELAIREMPLISSAGE);
   }
   i = 0;
-  while (i != positionArret.posMinutes && i != NBRLEDS)
+  while (i <= positionArret.posMinutes)
   {
     cadran[i].rouge += couleurMinutes.rouge;
     cadran[i].vert += couleurMinutes.vert;
