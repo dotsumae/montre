@@ -8,7 +8,7 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 5      //luminosité de 0 a 255
+#define LUM 20      //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 1 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
 
