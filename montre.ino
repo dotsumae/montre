@@ -8,10 +8,10 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 100      //luminosité de 0 a 255
+#define LUM 50      //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 0 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
-
+#define DELAIREMPLISSAGE 30
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
@@ -27,10 +27,17 @@ struct led //trois valeurs de couleurs, de 0 a 255
   int bleu;
 };
 
+struct posAiguilles
+{
+  byte posHeures;
+  byte posMinutes;
+};
+
+
 uint32_t off = strip.Color(0, 0, 0);
 
 struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
-
+struct posAiguilles aiguilles = {0};
 
 void setup()
 {
@@ -66,34 +73,39 @@ void setup()
 
 void loop()
 {
-  struct led fullVert;
-  fullVert.rouge = 0;
-  fullVert.bleu = 0;
-  fullVert.vert = 255;
 
-  struct led fullBleu;
-  fullBleu.rouge = 0;
-  fullBleu.bleu = 255;
-  fullBleu.vert = 0;
 
   int heures = (int) horloge.getHour(h12, PM); //recuperation de l'heure
   int minutes = (int) horloge.getMinute();
   int secondes = (int) horloge.getSecond();
 
+  heures = 3;
+  minutes = 5;
 
-  cadran[soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) )].bleu = 255;
-  cadran[soixanteVersSeize(minutes)].vert = 255; //mise a 255 des deux dernières led
 
-  Serial.println("Avant remplissage : ");
-  printCadran(cadran);
+  aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
+  aiguilles.posMinutes = soixanteVersSeize(minutes);
 
-  Serial.println("Après remplissage : ");
-  printCadran(cadran);
+  Serial.print("Position des aiguilles : ");
+  Serial.print(aiguilles.posHeures);
+  Serial.print("  ");
+  Serial.println(aiguilles.posMinutes);
 
- remplirCadran(cadran, fullBleu);
-  remplirCadran(cadran, fullVert);
+  struct led couleurHeures;
+  struct led couleurMinutes;
 
-  delay(5000);
+  couleurHeures.rouge = 0;
+  couleurHeures.vert = 0;
+  couleurHeures.bleu = 255;
+
+  couleurMinutes.rouge = 0;
+  couleurMinutes.vert = 255;
+  couleurMinutes.bleu = 0;
+
+
+  remplirCadran(cadran, aiguilles, couleurHeures, couleurMinutes);
+
+  delay(2000);
   toutEteindre();
 
 }
@@ -149,24 +161,36 @@ void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau 
   strip.show();
 }
 
-void remplirCadran(struct led *cadran, struct led couleur) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
+void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct led couleurHeures, struct led couleurMinutes) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
 {
   int i = 0;
 
-  while ((cadran[i].bleu != couleur.bleu && cadran[i].vert != couleur.vert && cadran[i].rouge != couleur.rouge) && i != NBRLEDS)//cadran[i].rouge != couleur.rouge && cadran[i].vert != couleur.vert && cadran[i].bleu != couleur.bleu && i != NBRLEDS)
+  while (i != positionArret.posHeures && i != NBRLEDS)
   {
     Serial.print("Led ");
     Serial.print(i);
     Serial.println(" mise à jour.");
-    cadran[i].rouge += couleur.rouge;
-    cadran[i].vert += couleur.vert;
-    cadran[i].bleu += couleur.bleu;
+    cadran[i].rouge += couleurHeures.rouge;
+    cadran[i].vert += couleurHeures.vert;
+    cadran[i].bleu += couleurHeures.bleu;
     i++;
-    delay(200);
+    delay(DELAIREMPLISSAGE);
+    afficherCadran(cadran);
+  }
+i = 0;
+  while (i != positionArret.posMinutes && i != NBRLEDS)
+  {
+    Serial.print("Led ");
+    Serial.print(i);
+    Serial.println(" mise à jour.");
+    cadran[i].rouge += couleurMinutes.rouge;
+    cadran[i].vert += couleurMinutes.vert;
+    cadran[i].bleu += couleurMinutes.bleu;
+    i++;
+    delay(DELAIREMPLISSAGE);
     afficherCadran(cadran);
   }
 }
-
 
 void toutEteindre()
 {
