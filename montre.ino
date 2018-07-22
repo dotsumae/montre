@@ -19,6 +19,7 @@ DS3231 horloge;
 uint32_t off = strip.Color(0, 0, 0);
 bool h12; //recupération de paramètres de l'horloge
 bool PM;
+bool Century;
 
 struct led //trois valeurs de couleurs, de 0 a 255
 {
@@ -47,10 +48,11 @@ void setup()
     char *cTime = __TIME__;
     char *cDate = __DATE__;
 
-
+    Serial.println(cDate);
     horloge.setMonth(moisVersNombre(strsep(&cDate, " ")));
     horloge.setDate(atoi(strsep(&cDate, " ")));
-    horloge.setYear(atoi(strsep(&cDate, " ")));
+    horloge.setYear(atoi(strsep(&cDate, " ")) - 2000);
+
     horloge.setClockMode(true); // Heure
     horloge.setHour(atoi(strsep(&cTime, ":")));
     horloge.setMinute(atoi(strsep(&cTime, ":")));
@@ -66,12 +68,18 @@ void loop()
 {
 
 
-  Serial.print(horloge.getHour(h12, PM), DEC);
+  Serial.print(horloge.getHour(h12, PM), DEC); //affichage de l'heure
   Serial.print(" heures ");
   Serial.print(horloge.getMinute(), DEC);
   Serial.print(" minutes et ");
   Serial.print(horloge.getSecond(), DEC);
   Serial.println(" secondes. ");
+
+  Serial.print(horloge.getDate(), DEC); //affichage de la date
+  Serial.print("/");
+  Serial.print(horloge.getMonth(Century), DEC);
+  Serial.print("/");
+  Serial.println(horloge.getYear(), DEC);
 
 
   int heures = (int) horloge.getHour(h12, PM); //recuperation de l'heure
@@ -152,69 +160,77 @@ int soixanteVersSeize(int position)
   return positionEntiere;
 }
 
-int moisVersNombre(char mois[3])
+int moisVersNombre(char *mois)
 {
   byte Month;
+  Serial.println(mois);
 
-  if (mois == "jan")
+  if (!strcmp(mois, "Jan"))
   {
     Month = 1;
   }
 
-  else if (mois == "feb")
+  else if (!strcmp(mois, "Fev"))
   {
     Month = 2;
   }
 
-  else if (mois == "mar")
+  else if (!strcmp(mois, "Mar"))
   {
     Month = 3;
   }
-  else if (mois == "apr")
+  else if (!strcmp(mois, "Apr"))
   {
     Month = 4;
   }
 
-  else if (mois == "may")
+  else if (!strcmp(mois, "May"))
   {
     Month = 5;
   }
 
-  else if (mois == "jun")
+  else if (!strcmp(mois, "Jun"))
   {
     Month = 6;
   }
 
-  else if (mois == "jul")
+  else if (!strcmp(mois, "Jul"))
   {
     Month = 7;
   }
 
-  else if (mois == "aug")
+  else if (!strcmp(mois, "Aug"))
   {
     Month = 8;
   }
 
-  else if (mois == "sep")
+  else if (!strcmp(mois, "Sep"))
   {
     Month = 9;
   }
 
-  else if (mois == "otc")
+  else if (!strcmp(mois, "Oct"))
   {
     Month = 10;
   }
 
-  else if (mois == "nov")
+  else if (!strcmp(mois, "Nov"))
   {
     Month = 11;
   }
 
-  else if (mois == "dec")
+  else if (!strcmp(mois, "Dec"))
   {
     Month = 12;
   }
 
+  else
+  {
+    Month = 0; //erreur
+    Serial.println("Erreur dans la lecture du mois !");
+  }
+
+  Serial.println(Month);
   return Month;
 
 }
