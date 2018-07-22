@@ -8,8 +8,9 @@
 #include <time.h>
 
 #define PIN_OUT 6
-#define LUM 1      //luminosité de 0 a 255
+#define LUM 5      //luminosité de 0 a 255
 #define NBRLEDS 16
+#define SETTIME 1 //mise a l'heure de l'horloge. Uploader avec 1 puis 0 pour maj le RTC.
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
@@ -41,12 +42,12 @@ void setup()
   delay(100);
   strip.show();
 
-  #ifndef SETTIME
-  #define SETTME
+  if (SETTIME)
+  {
     char *cTime = __TIME__;
     char *cDate = __DATE__;
-    
-  
+
+
     horloge.setMonth(moisVersNombre(strsep(&cDate, " ")));
     horloge.setDate(atoi(strsep(&cDate, " ")));
     horloge.setYear(atoi(strsep(&cDate, " ")));
@@ -57,12 +58,13 @@ void setup()
 
     free(cTime);
     free(cDate);
-  #endif
 
+  }
 }
 
 void loop()
 {
+
 
   Serial.print(horloge.getHour(h12, PM), DEC);
   Serial.print(" heures ");
@@ -154,66 +156,69 @@ int moisVersNombre(char mois[3])
 {
   byte Month;
 
-    if (mois == "jan")
-    {
-      Month = 1;
-    }
+  if (mois == "jan")
+  {
+    Month = 1;
+  }
 
-    else if (mois == "feb")
-    {
-      Month = 2;
-    }
+  else if (mois == "feb")
+  {
+    Month = 2;
+  }
 
-    else if (mois == "mar")
-    {
-      Month = 3;
-    }
-    else if (mois == "apr")
-    {
-      Month = 4;
-    }
+  else if (mois == "mar")
+  {
+    Month = 3;
+  }
+  else if (mois == "apr")
+  {
+    Month = 4;
+  }
 
-    else if (mois == "may")
-    {
-      Month = 5;
-    }
+  else if (mois == "may")
+  {
+    Month = 5;
+  }
 
-    else if (mois == "jun")
-    {
-      Month = 6;
-    }
+  else if (mois == "jun")
+  {
+    Month = 6;
+  }
 
-    else if (mois == "jul")
-    {
-      Month = 7;
-    }
+  else if (mois == "jul")
+  {
+    Month = 7;
+  }
 
-    else if (mois == "aug")
-    {
-      Month = 8;
-    }
+  else if (mois == "aug")
+  {
+    Month = 8;
+  }
 
-    else if (mois == "sep")
-    {
-      Month = 9;
-    }
+  else if (mois == "sep")
+  {
+    Month = 9;
+  }
 
-    else if (mois == "otc")
-    {
-      Month = 10;
-    }
+  else if (mois == "otc")
+  {
+    Month = 10;
+  }
 
-    else if (mois == "nov")
-    {
-      Month = 11;
-    }
+  else if (mois == "nov")
+  {
+    Month = 11;
+  }
 
-    else if (mois == "dec")
-    {
-      Month = 12;
-    }
+  else if (mois == "dec")
+  {
+    Month = 12;
+  }
 
-    return Month;
-    
+  return Month;
+
 }
+
+
+
 
