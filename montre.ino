@@ -13,6 +13,8 @@
 
 #define SETTIME 1 //Mettre l'horloge a l'heure de la compilation
 
+
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
 
@@ -46,24 +48,24 @@ void setup()
   delay(100);
   strip.show();
 
-  if (SETTIME)
-  {
-    
-    char *cTime = __TIME__;
-    char *cDate = __DATE__;
+#ifndef SETTIME
+#define SETTME
+  char *cTime = __TIME__;
+  char *cDate = __DATE__;
 
 
-    //Serial.println(cTime);
-    horloge.setClockMode(true); // set to 12h
-    //    horloge.setYear(Year);
-    //    horloge.setMonth(Month);
-    //    horloge.setDate(Date);
-    //    horloge.setDoW(DoW);
+  //Serial.println(cTime);
+  horloge.setClockMode(true); // set to 12h
+  //    horloge.setYear(Year);
+  //    horloge.setMonth(Month);
+  //    horloge.setDate(Date);
+  //    horloge.setDoW(DoW);
 
-    horloge.setHour(atoi(strsep(&cTime, ":")));
-    horloge.setMinute(atoi(strsep(&cTime, ":")));
-    horloge.setSecond(atoi(cTime));
-  }
+  horloge.setHour(atoi(strsep(&cTime, ":")));
+  horloge.setMinute(atoi(strsep(&cTime, ":")));
+  horloge.setSecond(atoi(cTime));
+#endif
+
 }
 
 void loop()
