@@ -8,9 +8,10 @@
 #include <time.h>
 
 #define PIN_OUT 6
+#define PIN_BOUTON 2
 #define LUM 100      //luminosité de 0 a 255
 #define NBRLEDS 16
-#define SETTIME 1 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
+#define SETTIME 0 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
 #define DELAIREMPLISSAGE 30
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
@@ -41,7 +42,7 @@ struct posAiguilles aiguilles = {0};
 
 void setup()
 {
-
+  pinMode(PIN_BOUTON, INPUT);
   Serial.begin(9600);
   strip.begin();
   Wire.begin();
@@ -79,8 +80,7 @@ void loop()
   int minutes = (int) horloge.getMinute();
   int secondes = (int) horloge.getSecond();
 
-heures = 3;
-minutes = 5;
+
   aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
@@ -101,9 +101,12 @@ minutes = 5;
   couleurMinutes.bleu = 0;
 
 
+  if (digitalRead(PIN_BOUTON) == HIGH) //bouton presse
+  {
   remplirCadran(cadran, aiguilles, couleurHeures, couleurMinutes);
+  }
 
-  delay(2000);
+  delay(3000);
   toutEteindre();
 
 }
