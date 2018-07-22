@@ -11,9 +11,6 @@
 #define LUM 1 //luminosité de 0 a 255
 #define NBRLEDS 16
 
-#define SETTIME 1 //Mettre l'horloge a l'heure de la compilation
-
-
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
