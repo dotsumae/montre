@@ -9,7 +9,7 @@
 
 #define PIN_OUT 6
 #define PIN_BOUTON 2
-#define LUM 100      //luminosité de 0 a 255
+#define LUM 100       //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 0 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
 #define DELAIREMPLISSAGE 30
@@ -92,21 +92,25 @@ void loop()
   struct led couleurHeures;
   struct led couleurMinutes;
 
-  couleurHeures.rouge = 0;
+  couleurHeures.rouge = 255;
   couleurHeures.vert = 0;
-  couleurHeures.bleu = 255;
+  couleurHeures.bleu = 0;
 
   couleurMinutes.rouge = 0;
   couleurMinutes.vert = 255;
   couleurMinutes.bleu = 0;
 
 
-  if (digitalRead(PIN_BOUTON) == HIGH) //bouton presse
-  {
-  remplirCadran(cadran, aiguilles, couleurHeures, couleurMinutes);
-  }
 
-  delay(3000);
+
+  while (!digitalRead(PIN_BOUTON) == HIGH) //bouton presse
+  {
+    ;
+  }
+  remplirCadran(cadran, aiguilles, couleurHeures, couleurMinutes);
+
+
+  delay(5000);
   toutEteindre();
 
 }
