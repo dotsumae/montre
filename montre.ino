@@ -21,12 +21,6 @@ bool h12; //recupération de paramètres de l'horloge
 bool PM;
 bool Century;
 
-struct led //trois valeurs de couleurs, de 0 a 255
-{
-  int rouge;
-  int vert;
-  int bleu;
-};
 
 struct posAiguilles
 {
@@ -35,9 +29,13 @@ struct posAiguilles
 };
 
 
-uint32_t off = strip.Color(0, 0, 0);
+int off = strip.Color(0, 0, 0);
+uint32_t rouge = strip.Color(255, 0, 0);
+uint32_t vert = strip.Color(0, 255, 0);
+uint32_t bleu = strip.Color(0, 0, 255);
 
-struct led cadran[NBRLEDS] = {0}; //La LED 0 est midi, le tableau les représente dans le sens des aiguilles
+
+uint32_t etatCadran[NBRLEDS] = {0}; //Tableau de strip.Color(). La LED 0 est midi, le tableau les représente dans le sens des aiguilles
 struct posAiguilles aiguilles = {0};
 
 void setup()
@@ -84,22 +82,13 @@ void loop()
   aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
-  Serial.print("Position des aiguilles : ");
-  Serial.print(aiguilles.posHeures);
-  Serial.print("  ");
-  Serial.println(aiguilles.posMinutes);
+  //  Serial.print("Position des aiguilles : ");
+  //  Serial.print(aiguilles.posHeures);
+  //  Serial.print("  ");
+  //  Serial.println(aiguilles.posMinutes);
 
-  struct led couleurHeures;
-  struct led couleurMinutes;
 
-  couleurHeures.rouge = 255;
-  couleurHeures.vert = 0;
-  couleurHeures.bleu = 0;
-
-  couleurMinutes.rouge = 0;
-  couleurMinutes.vert = 0;
-  couleurMinutes.bleu = 255;
-
+  delay(1000);
 
 
 
@@ -107,96 +96,96 @@ void loop()
   {
     ;
   }
-  remplirCadran(cadran, aiguilles, couleurHeures, couleurMinutes);
-
+  etatCadran[1] = 0xFF00FF;
+  printCadran();
 
   delay(5000);
   toutEteindre();
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void printCadran(struct led *cadran)
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+void printCadran()
 {
   Serial.println("Etat du cadran : ");
   for (int i = 0; i < NBRLEDS; i++)
   {
     Serial.print("  R : ");
-    Serial.print(cadran[i].rouge);
+    Serial.print(etatCadran[i] & rouge, HEX);
     Serial.print("  G : ");
-    Serial.print(cadran[i].vert);
+    Serial.print(etatCadran[i] & vert, HEX);
     Serial.print("  B : ");
-    Serial.println(cadran[i].bleu);
+    Serial.println(etatCadran[i] & bleu, HEX);
   }
 }
-
-
-
-void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
-{
-  for (int i = 0; i < NBRLEDS; i++)
-  {
-
-    if (cadran[i].rouge > 255)
-      cadran[i].rouge = 255;
-
-    if (cadran[i].vert > 255) // vérifications
-      cadran[i].vert = 255;
-
-    if (cadran[i].bleu > 255)
-      cadran[i].bleu = 255;
-
-
-    strip.setPixelColor(15 - i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
-
-
-  }
-  strip.show();
-}
-
-void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct led couleurHeures, struct led couleurMinutes) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
-{
-  int i = 0;
-
-  while (i <= positionArret.posHeures)
-  {
-    cadran[i].rouge += couleurHeures.rouge;
-    cadran[i].vert += couleurHeures.vert;
-    cadran[i].bleu += couleurHeures.bleu;
-    afficherCadran(cadran);
-
-    i++;
-    delay(DELAIREMPLISSAGE);
-  }
-  i = 0;
-  while (i <= positionArret.posMinutes)
-  {
-    cadran[i].rouge += couleurMinutes.rouge;
-    cadran[i].vert += couleurMinutes.vert;
-    cadran[i].bleu += couleurMinutes.bleu;
-    afficherCadran(cadran);
-
-    i++;
-    delay(DELAIREMPLISSAGE);
-  }
-}
-
+//
+//
+//
+//void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
+//{
+//  for (int i = 0; i < NBRLEDS; i++)
+//  {
+//
+//    if (cadran[i].rouge > 255)
+//      cadran[i].rouge = 255;
+//
+//    if (cadran[i].vert > 255) // vérifications
+//      cadran[i].vert = 255;
+//
+//    if (cadran[i].bleu > 255)
+//      cadran[i].bleu = 255;
+//
+//
+//    strip.setPixelColor(15 - i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
+//
+//
+//  }
+//  strip.show();
+//}
+//
+//void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct led couleurHeures, struct led couleurMinutes) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
+//{
+//  int i = 0;
+//
+//  while (i <= positionArret.posHeures)
+//  {
+//    cadran[i].rouge += couleurHeures.rouge;
+//    cadran[i].vert += couleurHeures.vert;
+//    cadran[i].bleu += couleurHeures.bleu;
+//    afficherCadran(cadran);
+//
+//    i++;
+//    delay(DELAIREMPLISSAGE);
+//  }
+//  i = 0;
+//  while (i <= positionArret.posMinutes)
+//  {
+//    cadran[i].rouge += couleurMinutes.rouge;
+//    cadran[i].vert += couleurMinutes.vert;
+//    cadran[i].bleu += couleurMinutes.bleu;
+//    afficherCadran(cadran);
+//
+//    i++;
+//    delay(DELAIREMPLISSAGE);
+//  }
+//}
+//
 void toutEteindre()
 {
-  memset(cadran, 0, sizeof(struct led) * NBRLEDS);
-  afficherCadran(cadran);
+  memset(etatCadran, 0, sizeof(int) * NBRLEDS);
+  //afficherCadran(cadran);
 }
 
 
