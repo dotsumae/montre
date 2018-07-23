@@ -9,10 +9,11 @@
 
 #define PIN_OUT 6
 #define PIN_BOUTON 2
-#define LUM 10       //luminosité de 0 a 255
+#define LUM 5       //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 0 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
-#define DELAIREMPLISSAGE 30
+#define DELAIREMPLISSAGE 70
+#define DUREEAFFICHAGE 5 //en secondes
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
@@ -22,11 +23,11 @@ bool PM;
 bool Century;
 
 
-struct posAiguilles
+struct posAiguilles //ATTENTION : la position est en LEDS, pas en heures/minutes !!
 {
   byte posHeures;
   byte posMinutes;
-};
+} aiguilles = {0};
 
 
 int off = strip.Color(0, 0, 0);
@@ -36,7 +37,6 @@ uint32_t bleu = strip.Color(0, 0, 255);
 
 
 uint32_t etatCadran[NBRLEDS] = {0}; //Tableau de strip.Color(). La LED 0 est midi, le tableau les représente dans le sens des aiguilles
-struct posAiguilles aiguilles = {0};
 
 void setup()
 {
@@ -82,45 +82,34 @@ void loop()
   aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
-  //  Serial.print("Position des aiguilles : ");
-  //  Serial.print(aiguilles.posHeures);
-  //  Serial.print("  ");
-  //  Serial.println(aiguilles.posMinutes);
-
-
-  delay(1000);
-
-
 
   while (!digitalRead(PIN_BOUTON) == HIGH) //bouton presse
   {
     ;
   }
 
-  etatCadran[2] = 0xFFFFFF;
-  etatCadran[1] = 0x00FF00;
-  
-  afficherCadran();
+
+  remplirCadran(rouge, bleu); //void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes)
   printCadran();
 
-  delay(1000);
+  delay(DUREEAFFICHAGE * 1000);
   toutEteindre();
 
 }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void printCadran()
 {
   Serial.println("Etat du cadran : ");
@@ -148,10 +137,10 @@ void afficherCadran() //met a jour le neoring avec etatCadran, verifie au passag
 
     if (composanteRouge > 0xFF0000)
       composanteRouge = 0xFF0000;
-      
+
     if (composanteVert > 0x00FF00)
       composanteVert = 0x00FF00;
-      
+
     if (composanteBleu > 0x0000FF)
       composanteBleu = 0x0000FF;
 
@@ -163,33 +152,27 @@ void afficherCadran() //met a jour le neoring avec etatCadran, verifie au passag
   strip.show();
 }
 //
-//void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct led couleurHeures, struct led couleurMinutes) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
-//{
-//  int i = 0;
-//
-//  while (i <= positionArret.posHeures)
-//  {
-//    cadran[i].rouge += couleurHeures.rouge;
-//    cadran[i].vert += couleurHeures.vert;
-//    cadran[i].bleu += couleurHeures.bleu;
-//    afficherCadran(cadran);
-//
-//    i++;
-//    delay(DELAIREMPLISSAGE);
-//  }
-//  i = 0;
-//  while (i <= positionArret.posMinutes)
-//  {
-//    cadran[i].rouge += couleurMinutes.rouge;
-//    cadran[i].vert += couleurMinutes.vert;
-//    cadran[i].bleu += couleurMinutes.bleu;
-//    afficherCadran(cadran);
-//
-//    i++;
-//    delay(DELAIREMPLISSAGE);
-//  }
-//}
-//
+void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes) //Effet plus esthetique pour afficher l'heure
+{
+  int i = 0;
+  while (i <= aiguilles.posHeures)
+  {
+    etatCadran[i] += couleurHeures;
+    afficherCadran();
+    i++;
+    delay(DELAIREMPLISSAGE);
+  }
+
+  i = 0;
+  while (i <= aiguilles.posMinutes)
+  {
+    etatCadran[i] += couleurMinutes;
+    afficherCadran();
+    i++;
+    delay(DELAIREMPLISSAGE);
+  }
+}
+
 void toutEteindre()
 {
   memset(etatCadran, 0, sizeof(uint32_t) * NBRLEDS);
