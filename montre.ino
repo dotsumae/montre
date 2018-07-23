@@ -96,10 +96,14 @@ void loop()
   {
     ;
   }
-  etatCadran[1] = 0xFF00FF;
+
+  etatCadran[2] = 0xFFFFFF;
+  etatCadran[1] = 0x00FF00;
+  
+  afficherCadran();
   printCadran();
 
-  delay(5000);
+  delay(1000);
   toutEteindre();
 
 }
@@ -130,30 +134,34 @@ void printCadran()
     Serial.println(etatCadran[i] & bleu, HEX);
   }
 }
-//
-//
-//
-//void afficherCadran(struct led *cadran) //prend en entrée l'adresse du tableau cadran
-//{
-//  for (int i = 0; i < NBRLEDS; i++)
-//  {
-//
-//    if (cadran[i].rouge > 255)
-//      cadran[i].rouge = 255;
-//
-//    if (cadran[i].vert > 255) // vérifications
-//      cadran[i].vert = 255;
-//
-//    if (cadran[i].bleu > 255)
-//      cadran[i].bleu = 255;
-//
-//
-//    strip.setPixelColor(15 - i, strip.Color(cadran[i].rouge, cadran[i].vert, cadran[i].bleu));
-//
-//
-//  }
-//  strip.show();
-//}
+
+
+
+void afficherCadran() //met a jour le neoring avec etatCadran, verifie au passage que rien ne déborde
+{
+  for (int i = 0; i < NBRLEDS; i++)
+  {
+    uint32_t composanteRouge = etatCadran[i] & rouge; //masquage avec FF 00 00 (rouge)
+    uint32_t composanteVert = etatCadran[i] & vert; //masquage avec 00 FF 00 (vert)
+    uint32_t composanteBleu = etatCadran[i] & bleu; //masquage avec 00 00 FF (bleu)
+
+
+    if (composanteRouge > 0xFF0000)
+      composanteRouge = 0xFF0000;
+      
+    if (composanteVert > 0x00FF00)
+      composanteVert = 0x00FF00;
+      
+    if (composanteBleu > 0x0000FF)
+      composanteBleu = 0x0000FF;
+
+
+    strip.setPixelColor(15 - i, composanteRouge + composanteVert + composanteBleu);
+
+
+  }
+  strip.show();
+}
 //
 //void remplirCadran(struct led *cadran, struct posAiguilles positionArret, struct led couleurHeures, struct led couleurMinutes) //remplit le tableau de 255 jusqu'à la première led de la led (couleur) donnée
 //{
@@ -184,8 +192,8 @@ void printCadran()
 //
 void toutEteindre()
 {
-  memset(etatCadran, 0, sizeof(int) * NBRLEDS);
-  //afficherCadran(cadran);
+  memset(etatCadran, 0, sizeof(uint32_t) * NBRLEDS);
+  afficherCadran();
 }
 
 
