@@ -79,7 +79,7 @@ void loop()
   int secondes = (int) horloge.getSecond();
 
 
-  aiguilles.posHeures = soixanteVersSeize((int) (heures % 12) * (60.0 / 12.0) ); //placement des aiguilles sur le cadran
+  aiguilles.posHeures = soixanteVersSeize(round ((heures % 12) * (60.0 / 12.0) )); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
 
@@ -186,7 +186,7 @@ int soixanteVersSeize(int position)
 {
   //  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
 
-  int positionEntiere = (int) (position / 3.75); //indice de la led a allumer
+  int positionEntiere = round(position / 3.75); //indice de la led a allumer
   float positionDecimale = position / 3.75 - positionEntiere; //proximité entre 0 et 1- de la led suivante
 
   return positionEntiere;
