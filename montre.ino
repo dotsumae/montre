@@ -9,7 +9,7 @@
 
 #define PIN_OUT 6
 #define PIN_BOUTON 2
-#define LUM 100       //luminosité de 0 a 255
+#define LUM 10       //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 0 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
 #define DELAIREMPLISSAGE 30
@@ -97,8 +97,8 @@ void loop()
   couleurHeures.bleu = 0;
 
   couleurMinutes.rouge = 0;
-  couleurMinutes.vert = 255;
-  couleurMinutes.bleu = 0;
+  couleurMinutes.vert = 0;
+  couleurMinutes.bleu = 255;
 
 
 
