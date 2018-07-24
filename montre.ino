@@ -9,7 +9,7 @@
 
 #define PIN_OUT 6
 #define PIN_BOUTON 2
-#define LUM 5       //luminosité de 0 a 255
+#define LUM 150        //luminosité de 0 a 255
 #define NBRLEDS 16
 #define SETTIME 0 //mise a l'heure de l'horloge. Compiler deux fois avec 1 puis 0 pour maj le RTC.
 #define DELAIREMPLISSAGE 70
@@ -30,10 +30,10 @@ struct posAiguilles //ATTENTION : la position est en LEDS, pas en heures/minutes
 } aiguilles = {0};
 
 
-int off = strip.Color(0, 0, 0);
-uint32_t rouge = strip.Color(255, 0, 0);
-uint32_t vert = strip.Color(0, 255, 0);
-uint32_t bleu = strip.Color(0, 0, 255);
+const uint32_t off = strip.Color(0, 0, 0);
+const uint32_t rouge = strip.Color(255, 0, 0);
+const uint32_t vert = strip.Color(0, 255, 0);
+const uint32_t bleu = strip.Color(0, 0, 255);
 
 
 uint32_t etatCadran[NBRLEDS] = {0}; //Tableau de strip.Color(). La LED 0 est midi, le tableau les représente dans le sens des aiguilles
@@ -79,7 +79,7 @@ void loop()
   int secondes = (int) horloge.getSecond();
 
 
-  aiguilles.posHeures = soixanteVersSeize(round ((heures % 12) * (60.0 / 12.0) )); //placement des aiguilles sur le cadran
+  aiguilles.posHeures = soixanteVersSeize((int) ((heures % 12) * (60.0 / 12.0) )); //placement des aiguilles sur le cadran
   aiguilles.posMinutes = soixanteVersSeize(minutes);
 
 
@@ -89,7 +89,9 @@ void loop()
   }
 
 
-  remplirCadran(rouge, bleu); //void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes)
+  aiguilles.posHeures = 4;
+  aiguilles.posMinutes = 12;
+  remplirCadran(0x00FFFF, 0xFF00FF); //void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes)
   printCadran();
 
   delay(DUREEAFFICHAGE * 1000);
@@ -135,6 +137,7 @@ void afficherCadran() //met a jour le neoring avec etatCadran, verifie au passag
     uint32_t composanteBleu = etatCadran[i] & bleu; //masquage avec 00 00 FF (bleu)
 
 
+
     if (composanteRouge > 0xFF0000)
       composanteRouge = 0xFF0000;
 
@@ -157,7 +160,7 @@ void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes) //Effet plus
   int i = 0;
   while (i <= aiguilles.posHeures)
   {
-    etatCadran[i] += couleurHeures;
+    etatCadran[i] |= couleurHeures; //superposition bit a bit putot qu'addition pour eviter les débordements
     afficherCadran();
     i++;
     delay(DELAIREMPLISSAGE);
@@ -166,7 +169,7 @@ void remplirCadran(uint32_t couleurHeures, uint32_t couleurMinutes) //Effet plus
   i = 0;
   while (i <= aiguilles.posMinutes)
   {
-    etatCadran[i] += couleurMinutes;
+    etatCadran[i] |= couleurMinutes;
     afficherCadran();
     i++;
     delay(DELAIREMPLISSAGE);
@@ -186,7 +189,7 @@ int soixanteVersSeize(int position)
 {
   //  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
 
-  int positionEntiere = round(position / 3.75); //indice de la led a allumer
+  int positionEntiere = (int) (position / 3.75); //indice de la led a allumer
   float positionDecimale = position / 3.75 - positionEntiere; //proximité entre 0 et 1- de la led suivante
 
   return positionEntiere;
