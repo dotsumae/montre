@@ -15,7 +15,7 @@
 #define DELAIREMPLISSAGE 70
 #define DUREEAFFICHAGE 5 //en secondes
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, PIN_OUT, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NBRLEDS, PIN_OUT, NEO_GRB + NEO_KHZ800);
 DS3231 horloge;
 
 bool h12; //recupération de paramètres de l'horloge
@@ -79,8 +79,8 @@ void loop()
   int secondes = (int) horloge.getSecond();
 
 
-  aiguilles.posHeures = soixanteVersSeize((int) ((heures % 12) * (60.0 / 12.0) )); //placement des aiguilles sur le cadran
-  aiguilles.posMinutes = soixanteVersSeize(minutes);
+  aiguilles.posHeures = soixanteVersN((int) ((heures % 12) * (60.0 / 12.0) )); //placement des aiguilles sur le cadran
+  aiguilles.posMinutes = soixanteVersN(minutes);
 
 
   while (!digitalRead(PIN_BOUTON) == HIGH) //bouton presse
@@ -185,7 +185,7 @@ void toutEteindre()
 
 
 
-int soixanteVersSeize(int position)
+int soixanteVersN(int position)
 {
   //  (position > 0) ? (position %= 60) : (position = (position % -60) + 60);
 
